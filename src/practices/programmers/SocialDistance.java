@@ -1,16 +1,23 @@
 package practices.programmers;
 
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Tuple {
+public class SocialDistance {
 
   public static void main(String[] args) {
     Solution solution = new Solution();
-    int[] i = solution.solution("{{4,2,3},{3},{2,3,4,1},{2,3}}");
+    int[] i = solution.solution(
+        new String[][]{
+            {"POOOP", "OXXOX", "OPXPX", "OOXOX", "POXXP"},
+            {"POOPX", "OXPXP", "PXXXO", "OXXXO", "OOOPP"},
+            {"PXOPX", "OXOXP", "OXPOX", "OXXOP", "PXPOX"},
+            {"OOOXX", "XOOOX", "OOOXX", "OXOOX", "OOOOO"},
+            {"PXPXP", "XPXPX", "PXPXP", "XPXPX", "PXPXP"}
+        });
+
     for (int i1 : i) {
       System.out.println(i1);
     }
@@ -18,47 +25,99 @@ public class Tuple {
 
   public static class Solution {
 
-    public int[] solution(String s) {
-      //1. array로 가져오기
-      String[] c = replace(s);
-      //2. cnt
-      Map<String, Integer> map = cnt(c);
-      //3. tuple
-      return getTuple(map);
+    public int[] solution(String[][] places) {
+      int[] answer = test(places);
+      return answer;
     }
 
-    public String[] replace(String s) {
-      s = s.replaceAll("\\{", "");
-      s = s.replaceAll("\\}", "");
-      return s.split(",");
-    }
-
-    public Map<String, Integer> cnt(String[] c) {
-      Map<String, Integer> map = new HashMap<>();
-
-      for (String c1 : c) {
-        if (map.containsKey(c1)) {
-          Integer i = map.get(c1);
-          map.put(c1, i + 1);
-        } else {
-          map.put(c1, 1);
-        }
+    public int[] test(String[][] places) {
+      int[] arr = new int[5];
+      // X 는 괜찮음
+      // O 이면 옆에 사람이 없어야함
+      for (int i = 0; i < places.length; i++) {
+        String[][] newArr = make2DimensionalArray(places[i]);
+        boolean test = newARRCheck(newArr);
+        arr[i] = test ? 1 : 0;
       }
-
-      return map;
-    }
-
-    public int[] getTuple(Map<String, Integer> map) {
-      int[] arr = new int[map.size()];
-      for (Entry<String, Integer> entries : map.entrySet()) {
-        int pos = map.size() - entries.getValue();
-        arr[pos] = Integer.valueOf(entries.getKey());
-      }
-
       return arr;
     }
 
+    public String[][] make2DimensionalArray(String[] arr) {
+      String[][] newArr = new String[5][5];
+      for (int i = 0; i < 5; i++) {
+        String[] a = arr[i].split("");
+        newArr[i] = a;
+      }
+      return newArr;
+    }
 
+    public boolean newARRCheck(String[][] newArr) {
+      boolean test = true;
+      check:
+      for (int i = 0; i < newArr.length; i++) {
+        for (int j = 0; j < newArr[i].length; j++) {
+          String target = newArr[i][j];
+          if (!target.equals("P")) {
+            continue;
+          }
+          test = check(newArr, i, j);
+          if (!test) {
+            break check;
+          }
+        }
+      }
+      return test;
+    }
+
+    public boolean check(String[][] places, int i, int j) {
+      int[][] pos = {{-1, -1}, {-1, 0}, {-1, 1}, {0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}};
+      boolean check = true;
+      for (int k = 0; k < pos.length; k++) {
+        int newI = i + pos[k][0];
+        int newJ = j + pos[k][1];
+
+        if (newI < 0 || newI > 4 || newJ < 0 || newJ > 4) {
+          continue;
+        }
+
+        String target = places[newI][newJ];
+
+        if (target.equals("P")) {
+          if (k == pos.length - 1) {
+            continue;
+          }
+          int kk = i + pos[k + 1][0];
+          int ll = j + pos[k + 1][1];
+
+          if (kk < 0 || kk > 4 || ll < 0 || ll > 4) {
+            continue;
+          }
+
+          String another = places[kk][ll];
+          if (!another.equals("X")) {
+            check = false;
+            break;
+          }
+        } else if (target.equals("O")){
+          if (k == pos.length - 1) {
+            continue;
+          }
+          int kk = i + pos[k + 1][0];
+          int ll = j + pos[k + 1][1];
+
+          if (kk < 0 || kk > 4 || ll < 0 || ll > 4) {
+            continue;
+          }
+
+          String another = places[kk][ll];
+          if (another.equals("P")) {
+            check = false;
+            break;
+          }
+        }
+      }
+      return check;
+    }
   }
 }
 

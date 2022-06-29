@@ -1,7 +1,7 @@
 package practices.programmers;
 
 
-public class Line {
+public class Line2 {
 
   public static void main(String[] args) {
     Solution solution = new Solution();

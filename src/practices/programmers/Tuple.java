@@ -1,90 +1,64 @@
 package practices.programmers;
 
 
-//내가 풀이한 방법
-//1. partition 별로 그룹을 만들어 나누고 압축률 확인하여 제일작은 것 반환
-public class CompressWords {
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class Tuple {
 
   public static void main(String[] args) {
     Solution solution = new Solution();
-    System.out.println(solution.solution("abcabcdede"));
+    int[] i = solution.solution("{{4,2,3},{3},{2,3,4,1},{2,3}}");
+    for (int i1 : i) {
+      System.out.println(i1);
+    }
   }
 
   public static class Solution {
 
-    public int solution(String s) {
-      int compressTolerance = s.length() / 2;
-      int answer = 1;
-      for (int i = 1; i <= compressTolerance; i++) {
-        String[] chars = partition(s, i);
-        int compressLevel = compress(chars);
-        if(answer == 1){
-          answer = compressLevel;
-        } else if (answer > compressLevel) {
-          answer = compressLevel;
-        }
-      }
-
-      return answer;
+    public int[] solution(String s) {
+      //1. array로 가져오기
+      String[] c = replace(s);
+      //2. cnt
+      Map<String, Integer> map = cnt(c);
+      //3. tuple
+      return getTuple(map);
     }
 
-    public int compress(String[] chars) {
-      int cnt = 1;
-      String answerStr = "";
+    public String[] replace(String s) {
+      s = s.replaceAll("\\{", "");
+      s = s.replaceAll("\\}", "");
+      return s.split(",");
+    }
 
-      //comp = a, a = 2
-      for (int i = 0; i < chars.length; i++) {
-        if (i == chars.length - 1) {
-          if(cnt == 1) {
-            answerStr += chars[i];
-          } else {
-            answerStr += cnt + chars[i];
-          }
-          break;
-        }
-        if (chars[i].equals(chars[i + 1])) {
-          cnt++;
+    public Map<String, Integer> cnt(String[] c) {
+      Map<String, Integer> map = new HashMap<>();
+
+      for (String c1 : c) {
+        if (map.containsKey(c1)) {
+          Integer i = map.get(c1);
+          map.put(c1, i + 1);
         } else {
-          if(cnt == 1) {
-            answerStr += chars[i];
-          } else {
-            answerStr += cnt + chars[i];
-          }
-
-          cnt = 1;
+          map.put(c1, 1);
         }
       }
 
-      return answerStr.trim().length();
+      return map;
     }
 
-    private String[] partition(String s, int partition) {
-      String[] str = s.split("");
-
-      String[] returnChar = s.length() % partition == 0
-          ? new String[s.length() / partition]
-          : new String[s.length() / partition + 1];
-      String group = "";
-      int n = 0;
-      int idx = 0;
-      for (int i = 0; i < str.length; i++) {
-
-        group += str[i];
-        n++;
-
-        if (n == partition) {
-          returnChar[idx] = group;
-          idx++;
-          n = 0;
-          group = "";
-        }
-
-        if(i == str.length-1 && group != "") {
-          returnChar[idx] = group;
-        }
+    public int[] getTuple(Map<String, Integer> map) {
+      int[] arr = new int[map.size()];
+      for (Entry<String, Integer> entries : map.entrySet()) {
+        int pos = map.size() - entries.getValue();
+        arr[pos] = Integer.valueOf(entries.getKey());
       }
-      return returnChar;
+
+      return arr;
     }
+
+
   }
 }
 
