@@ -1,7 +1,5 @@
-package practices.programmers;
+package practices.line;
 
-
-import practices.programmers.Line2.Solution;
 
 public class Line3 {
   public static void main(String[] args) {

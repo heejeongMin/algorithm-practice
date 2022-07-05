@@ -1,4 +1,4 @@
-package practices.programmers;
+package practices.line;
 
 
 public class Line1 {
